@@ -1,4 +1,4 @@
-Name: Build ESP32 Custom 4MB App
+name: Build ESP32 Custom 4MB App
 
 on: [push]
 
@@ -7,12 +7,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
     - name: Setup Arduino CLI
       uses: arduino/setup-arduino-cli@v1
 
-    - name: Install ESP32 core
+    - name: Install ESP32 Core
       run: |
         arduino-cli core update-index
         arduino-cli core install esp32:esp32
@@ -22,13 +23,12 @@ jobs:
         arduino-cli lib install "Adafruit MPU6050"
         arduino-cli lib install "Adafruit Unified Sensor"
         arduino-cli lib install "Adafruit BusIO"
-        # --- Added project libraries for the AI Assistant modules ---
         arduino-cli lib install "Adafruit SSD1306"
         arduino-cli lib install "Adafruit GFX Library"
         arduino-cli lib install "ArduinoJson"
         arduino-cli lib install "ESP32-audioI2S"
 
-        - name: Compile with Custom 3MB Memory Layout
+    - name: Compile with Custom 3MB Memory Layout
       run: |
         arduino-cli compile \
         --fqbn esp32:esp32:XIAO_ESP32S3 \
@@ -37,8 +37,7 @@ jobs:
         --export-binaries \
         main
 
-
-    - name: Upload artifact
+    - name: Upload Compiled Firmware Binary
       uses: actions/upload-artifact@v4
       with:
         name: firmware
