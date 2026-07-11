@@ -10,6 +10,10 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
+    # 🚀 NEW STEP: Unzip your audio library so the compiler can read it
+    - name: Unzip Audio Library
+      run: unzip ESP32-audioI2S-master.zip -d ./libraries
+
     - name: Setup Arduino CLI
       uses: arduino/setup-arduino-cli@v1
 
@@ -26,14 +30,13 @@ jobs:
         arduino-cli lib install "Adafruit SSD1306"
         arduino-cli lib install "Adafruit GFX Library"
         arduino-cli lib install "ArduinoJson"
-        arduino-cli lib install --git-url https://github.com/schreibfaul1/ESP32-audioI2S
-
 
     - name: Compile with Custom 3MB Memory Layout
       run: |
         arduino-cli compile \
         --fqbn esp32:esp32:XIAO_ESP32S3 \
         --build-property "build.custom_partitions=${{ github.workspace }}/partitions.csv" \
+        --libraries ./libraries/ESP32-audioI2S \
         --output-dir build \
         --export-binaries \
         main
