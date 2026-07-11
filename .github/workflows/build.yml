@@ -10,6 +10,12 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
+    # 1. Unzip the audio library into a folder named "audio_lib"
+    - name: Extract Audio Library
+      run: |
+        mkdir -p audio_lib
+        unzip ESP32-audioI2S-master.zip -d audio_lib
+
     - name: Setup Arduino CLI
       uses: arduino/setup-arduino-cli@v1
 
@@ -18,7 +24,7 @@ jobs:
         arduino-cli core update-index
         arduino-cli core install esp32:esp32
 
-    - name: Install Official Libraries (Registry)
+    - name: Install Official Libraries
       run: |
         arduino-cli lib install "Adafruit MPU6050"
         arduino-cli lib install "Adafruit Unified Sensor"
@@ -27,12 +33,19 @@ jobs:
         arduino-cli lib install "Adafruit GFX Library"
         arduino-cli lib install "ArduinoJson"
 
+    # 2. Compile and tell the compiler to look in the "audio_lib" folder
     - name: Compile
       run: |
         arduino-cli compile \
         --fqbn esp32:esp32:esp32s3 \
         --build-property "build.custom_partitions=${{ github.workspace }}/partitions.csv" \
-        --libraries ${{ github.workspace }}/ESP32-audioI2S \
+        --libraries ./audio_lib \
         --output-dir build \
         --export-binaries \
         main
+
+    - name: Upload firmware artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: firmware
+        path: build/*.bin
