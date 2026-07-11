@@ -1,4 +1,4 @@
-name: Build ESP32
+Name: Build ESP32 Custom 3MB App
 
 on: [push]
 
@@ -17,16 +17,22 @@ jobs:
         arduino-cli core update-index
         arduino-cli core install esp32:esp32
 
-    - name: Install Libraries
+    - name: Install Project Dependency Libraries
       run: |
         arduino-cli lib install "Adafruit MPU6050"
         arduino-cli lib install "Adafruit Unified Sensor"
         arduino-cli lib install "Adafruit BusIO"
+        # --- Added project libraries for the AI Assistant modules ---
+        arduino-cli lib install "Adafruit SSD1306"
+        arduino-cli lib install "Adafruit GFX Library"
+        arduino-cli lib install "ArduinoJson"
+        arduino-cli lib install "ESP32-audioI2S"
 
-    - name: Compile
+    - name: Compile with Custom 3MB Memory Layout
       run: |
         arduino-cli compile \
         --fqbn esp32:esp32:XIAO_ESP32S3 \
+        --build-property "build.partitions=partitions" \
         --output-dir build \
         --export-binaries \
         main
