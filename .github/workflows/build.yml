@@ -1,4 +1,4 @@
-name: Build ESP32 Custom 4MB App
+name: Build ESP32 Custom 3MB App
 
 on: [push]
 
@@ -10,10 +10,6 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    # 🚀 NEW STEP: Unzip your audio library so the compiler can read it
-    - name: Unzip Audio Library
-      run: unzip ESP32-audioI2S-master.zip -d ./libraries
-
     - name: Setup Arduino CLI
       uses: arduino/setup-arduino-cli@v1
 
@@ -22,7 +18,7 @@ jobs:
         arduino-cli core update-index
         arduino-cli core install esp32:esp32
 
-    - name: Install Project Dependency Libraries
+    - name: Install Official Libraries (Registry)
       run: |
         arduino-cli lib install "Adafruit MPU6050"
         arduino-cli lib install "Adafruit Unified Sensor"
@@ -31,18 +27,12 @@ jobs:
         arduino-cli lib install "Adafruit GFX Library"
         arduino-cli lib install "ArduinoJson"
 
-    - name: Compile with Custom 3MB Memory Layout
+    - name: Compile
       run: |
         arduino-cli compile \
-        --fqbn esp32:esp32:XIAO_ESP32S3 \
+        --fqbn esp32:esp32:esp32s3 \
         --build-property "build.custom_partitions=${{ github.workspace }}/partitions.csv" \
-        --libraries ./libraries/ESP32-audioI2S \
+        --libraries ${{ github.workspace }}/ESP32-audioI2S \
         --output-dir build \
         --export-binaries \
         main
-
-    - name: Upload Compiled Firmware Binary
-      uses: actions/upload-artifact@v4
-      with:
-        name: firmware
-        path: build/*.bin
