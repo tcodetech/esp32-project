@@ -1,4 +1,4 @@
-Name: Build ESP32 Custom 3MB App
+Name: Build ESP32 Custom 4MB App
 
 on: [push]
 
