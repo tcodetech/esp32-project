@@ -28,14 +28,15 @@ jobs:
         arduino-cli lib install "ArduinoJson"
         arduino-cli lib install "ESP32-audioI2S"
 
-    - name: Compile with Custom 3MB Memory Layout
+        - name: Compile with Custom 3MB Memory Layout
       run: |
         arduino-cli compile \
         --fqbn esp32:esp32:XIAO_ESP32S3 \
-        --build-property "build.partitions=partitions" \
+        --build-property "build.custom_partitions=${{ github.workspace }}/partitions.csv" \
         --output-dir build \
         --export-binaries \
         main
+
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
